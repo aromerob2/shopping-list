@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Shopping List</title>
+  <style>
+    ol {list-style-type: none;}
+  </style>
+  <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+  <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+</head>
+<body style="margin-left: 5%; width: 90%;">
+    <b-container>
+        <div id="item-list"> 
+            <b-card title="Shopping List:" tag="article" class="mb-2 mt-3"
+            >
+                <b-card-text>
+                        <b-row align-v="center">
+                                <b-col><b-form-input v-model="newItemText" id="new-item" placeholder="E.g. Potatoes" size="sm"></b-form-input></b-col>
+                                <b-col><b-button v-on:click.prevent="addItem" pill size='sm' class='btn btn-success'>Add</b-button></b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col><span style="color: red; font-size: 10px;">{{ alarmText }}</span></b-col>
+                        </b-row>
+                        <ol class="p-0 mt-2">
+                            <li v-for="(item, index) in items" v-if="!item.checked">
+                                <b-row b-row align-v="center">
+                                    <b-col><b-form-checkbox v-model="item.checked"/>
+                                    <span v-show="!item.editable">{{ item.name }}</span>
+                                    <b-form-input v-show="item.editable" v-model="item.name" size="sm"></b-form-input></b-col>
+                                    <b-col><b-button pill variant="success" v-show="item.editable" v-on:click="saveItem(item)" size="sm"></i> Save </b-button>
+                                    <b-button pill variant="info" v-show="!item.editable"v-on:click="editItem(item)" size="sm" ></i> Edit </b-button>
+                                    <b-button pill variant="danger" v-on:click="removeItem(index)" size="sm"> Delete </b-button></b-col>
+                                </b-row>
+                            </li>
+                            <li v-for="(item, index) in items" v-if="item.checked">
+                                <b-row align-v="center">
+                                    <b-col><b-form-checkbox type="checkbox" v-model="item.checked"/>
+                                    <span v-show="!item.editable" style="text-decoration: line-through;">{{ item.name }}</span>
+                                    <b-form-input  v-model="item.name" v-show="item.editable" style="text-decoration: line-through;" size="sm"></b-form-input></b-col>
+                                    <b-col><b-button pill variant="success" v-show="item.editable" v-on:click="saveItem(item)" size="sm"> Save </b-button>
+                                    <b-button pill variant="info" v-show="!item.editable" v-on:click="editItem(item)" size="sm"> Edit </b-button>
+                                    <b-button pill variant="danger" v-on:click="removeItem(index)" size="sm"> Delete </b-button></b-col>
+                                </b-row>
+                            </li>
+                        </ol>
+                    
+                </b-card-text>
+            </b-card>   
+    </div> 
+    </b-container>
+
+    <script>
+        var app1 = new Vue({
+            el: '#item-list',
+            data: {
+                newItemText: '',
+                alarmText: '',
+                items: [
+                {
+                    name: 'Milk',
+                    checked: true,
+                    editable: false,
+                },
+                {
+                    name: 'Eggs',
+                    checked: false,
+                    editable: false,
+                },
+                {
+                    name: 'Potatoes',
+                    checked: false,
+                    editable: false,
+                }
+                ],
+            },
+            methods: {
+                editItem: function (item){
+                    item.editable = true;
+                },
+                saveItem: function (item) {
+                    item.editable = false;
+                },
+                removeItem: function (index){
+                    this.items.splice(index, 1);
+                },
+                addItem: function () {
+                    newItemText = this.newItemText
+                    var valObj = this.items.filter(function(elem){
+                        return (elem.name == newItemText)
+                    });
+                    if (this.newItemText == '') {
+                        this.alarmText = 'Please enter an item';
+                    }
+                    else if (valObj.length) {
+                        this.alarmText = this.newItemText + ' is already on the list';
+                        this.newItemText = '';
+                    }
+                    else {
+                        this.items.push({
+                            checked: false,
+                            name: this.newItemText,
+                            editable: false
+                        })
+                        this.newItemText = ''
+                        this.alarmText = ''
+                        }
+                    }
+                },
+        })
+
+    </script>
+</body>
+</html>
